@@ -1,0 +1,2790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fariz-San | AI Prompt Generator</title>
+    <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap)" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --bg-card: #15151f;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #a855f7;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --text-primary: #f1f1f4;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: #27272a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --gradient-2: linear-gradient(135deg, #0a0a0f 0%, #1a1a25 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 2%) rotate(1deg); }
+            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+        }
+
+        /* Header */
+        header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.8);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Generator Section */
+        .generator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 1024px) {
+            .generator {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-title .icon {
+            font-size: 1.25rem;
+        }
+
+        /* Input Section */
+        .input-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* Prompt Type Pills */
+        .prompt-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .type-pill {
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .type-pill:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        .type-pill.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Generate Button */
+        .generate-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: auto;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Output Section */
+        .output-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+        }
+
+        .output-content {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .output-content.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+        }
+
+        .output-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .output-placeholder .icon {
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+
+        /* Output Actions */
+        .output-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .action-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .stat-item .value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Examples Section */
+        .examples-section {
+            margin-top: 4rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .example-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .example-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .example-card .category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-primary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .example-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .example-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Templates Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--error);
+            border-color: var(--error);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .template-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .template-item {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .template-item h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .template-item p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ── Media & Attachment Toolbar ── */
+        .media-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .media-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.9rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .media-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+        }
+
+        .media-btn.active-cam {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        /* Attachments preview list */
+        .attachments-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.75rem;
+        }
+
+        .attachment-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            max-width: 200px;
+        }
+
+        .attachment-chip .chip-icon { font-size: 1rem; flex-shrink: 0; }
+
+        .attachment-chip .chip-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-chip .chip-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0;
+            flex-shrink: 0;
+            transition: color 0.15s;
+        }
+
+        .attachment-chip .chip-remove:hover { color: var(--error); }
+
+        .attachment-chip.is-image { border-color: #6366f1; }
+        .attachment-chip.is-video { border-color: #8b5cf6; }
+        .attachment-chip.is-doc   { border-color: #f59e0b; }
+
+        /* Thumbnail preview for images */
+        .thumb-preview {
+            width: 36px;
+            height: 36px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        /* Camera modal */
+        .camera-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-modal-overlay.active { display: flex; }
+
+        .camera-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .camera-modal h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        #cameraFeed {
+            width: 100%;
+            border-radius: 12px;
+            background: #000;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+        }
+
+        #cameraCanvas { display: none; }
+
+        .camera-controls {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .cam-snap-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .cam-snap-btn:hover { opacity: 0.85; }
+
+        .cam-close-btn {
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cam-close-btn:hover { border-color: var(--error); color: var(--error); }
+
+        /* Camera tabs */
+        .cam-tab-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .cam-tab {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .cam-tab.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">✦</div>
+            Fariz-San
+        </div>
+        <nav class="nav-links">
+            <a href="#generator">Generator</a>
+            <a href="#examples">Examples</a>
+            <a href="#" onclick="openTemplates()">Templates</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Transform Ideas into <span>Powerful Prompts</span></h1>
+            <p>Enter a brief description and watch as we generate detailed, high-quality prompts perfect for AI art, writing, coding, and more.</p>
+        </section>
+
+        <section class="generator" id="generator">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">✏️</span>
+                        Input
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="form-group">
+                        <label>Your Brief Description</label>
+                        <textarea id="userInput" placeholder="Describe what you want in 2-3 lines...
+
+Example: A mystical forest at twilight with glowing mushrooms and a small fairy village hidden among ancient trees"></textarea>
+
+                        <!-- Hidden file inputs -->
+                        <input type="file" id="attachFileInput" multiple accept="*/*" style="display:none">
+                        <input type="file" id="attachImageInput" multiple accept="image/*,video/*" style="display:none">
+
+                        <!-- Media Toolbar -->
+                        <div class="media-toolbar">
+                            <button class="media-btn" onclick="document.getElementById('attachFileInput').click()" title="Attach any file">
+                                📎 Attach File
+                            </button>
+                            <button class="media-btn" onclick="document.getElementById('attachImageInput').click()" title="Attach image or video">
+                                🖼️ Image / Video
+                            </button>
+                            <button class="media-btn" id="cameraBtn" onclick="openCameraModal('photo')" title="Capture photo from camera">
+                                📷 Capture Photo
+                            </button>
+                            <button class="media-btn" id="videoBtn" onclick="openCameraModal('video')" title="Record video from camera">
+                                🎥 Record Video
+                            </button>
+                        </div>
+
+                        <!-- Attachments Preview -->
+                        <div class="attachments-list" id="attachmentsList"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Prompt Type</label>
+                        <div class="prompt-types">
+                            <button class="type-pill active" data-type="image">🎨 Image</button>
+                            <button class="type-pill" data-type="writing">📝 Writing</button>
+                            <button class="type-pill" data-type="code">💻 Code</button>
+                            <button class="type-pill" data-type="chat">💬 Chat/Assistant</button>
+                            <button class="type-pill" data-type="marketing">📢 Marketing</button>
+                            <button class="type-pill" data-type="video">🎬 Video</button>
+                        </div>
+                    </div>
+
+                    <div class="options-grid">
+                        <div class="form-group">
+                            <label>Style/Tone</label>
+                            <select id="style">
+                                <option value="detailed">Highly Detailed</option>
+                                <option value="creative">Creative & Artistic</option>
+                                <option value="professional">Professional</option>
+                                <option value="casual">Casual & Fun</option>
+                                <option value="technical">Technical</option>
+                                <option value="poetic">Poetic & Lyrical</option>
+                                <option value="cinematic">Cinematic</option>
+                                <option value="minimalist">Minimalist</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Output Length</label>
+                            <select id="length">
+                                <option value="medium">Medium (~500 words)</option>
+                                <option value="short">Short (~200 words)</option>
+                                <option value="long">Long (~1000 words)</option>
+                                <option value="extensive">Extensive (~2000+ words)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Detail Level</label>
+                            <select id="detail">
+                                <option value="comprehensive">Comprehensive</option>
+                                <option value="balanced">Balanced</option>
+                                <option value="focused">Focused</option>
+                                <option value="exhaustive">Exhaustive</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Creativity Level</label>
+                            <select id="creativity">
+                                <option value="high">High (More Unique)</option>
+                                <option value="medium">Medium (Balanced)</option>
+                                <option value="low">Low (More Predictable)</option>
+                                <option value="experimental">Experimental</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="generate-btn" onclick="generatePrompt()">
+                        <span class="btn-text">⚡ Generate Prompt</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">✨</span>
+                        Generated Prompt
+                    </div>
+                    <div id="wordCount" class="stat-item" style="display: none;">
+                        <span class="value">0</span> words
+                    </div>
+                </div>
+
+                <div class="output-area">
+                    <div class="output-content empty" id="output">
+                        <div class="output-placeholder">
+                            <span class="icon">🚀</span>
+                            <div>
+                                <p>Your generated prompt will appear here</p>
+                                <p style="font-size: 0.8rem; margin-top: 0.5rem;">Enter your idea and click Generate</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="output-actions" id="outputActions" style="display: none;">
+                        <button class="action-btn" onclick="copyPrompt()">
+                            <span>📋</span> Copy
+                        </button>
+                        <button class="action-btn" onclick="downloadPrompt()">
+                            <span>💾</span> Download
+                        </button>
+                        <button class="action-btn" onclick="regenerate()">
+                            <span>🔄</span> Regenerate
+                        </button>
+                        <button class="action-btn" onclick="refinePrompt()">
+                            <span>✨</span> Refine
+                        </button>
+                    </div>
+
+                    <div class="stats-bar" id="statsBar" style="display: none;">
+                        <div class="stat-item">
+                            <span>📊 Words:</span>
+                            <span class="value" id="statWords">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📝 Characters:</span>
+                            <span class="value" id="statChars">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📖 Lines:</span>
+                            <span class="value" id="statLines">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="examples-section" id="examples">
+            <div class="section-header">
+                <h2>Quick Start Examples</h2>
+                <p>Click any example to load it into the generator</p>
+            </div>
+
+            <div class="examples-grid">
+                <div class="example-card" onclick="loadExample('image', 'A cyberpunk city at night with neon signs, flying cars, and rain-soaked streets reflecting colorful lights')">
+                    <span class="category">🎨 Image</span>
+                    <h3>Cyberpunk Cityscape</h3>
+                    <p>A cyberpunk city at night with neon signs, flying cars, and rain-soaked streets reflecting colorful lights</p>
+                </div>
+
+                <div class="example-card" onclick="loadExample('writing', 'A mystery novel opening where a detective receives an anonymous letter containing a single dried rose and a chess piece')">
+                    <span class="category">📝 Writing</span>
+                    <h3>Mystery Novel Opening</h3>
+                    <p>A detective receives an anonymous letter containing a single dried rose and a chess piece</p>
+                </div>
+
+                <div class="example-card" onclick="loadExample('code', 'A real-time collaborative whiteboard app with drawing tools, shape recognition, and multi-user cursors')">
+                    <span class="category">💻 Code</span>
+                    <h3>Collaborative Whiteboard</h3>
+                    <p>Real-time whiteboard with drawing tools, shape recognition, and multi-user collaboration</p>
+                </div>
+
+                <div class="example-card" onclick="loadExample('marketing', 'Launch campaign for an eco-friendly water bottle made from ocean plastic, targeting health-conscious millennials')">
+                    <span class="category">📢 Marketing</span>
+                    <h3>Eco Product Launch</h3>
+                    <p>Campaign for eco-friendly water bottle made from ocean plastic</p>
+                </div>
+
+                <div class="example-card" onclick="loadExample('chat', 'A friendly cooking assistant that helps with recipes, substitutions, and meal planning based on available ingredients')">
+                    <span class="category">💬 Assistant</span>
+                    <h3>Cooking Assistant</h3>
+                    <p>Helpful cooking assistant for recipes, substitutions, and meal planning</p>
+                </div>
+
+                <div class="example-card" onclick="loadExample('video', 'A 60-second animated explainer about how blockchain works, using a postal mail analogy')">
+                    <span class="category">🎬 Video</span>
+                    <h3>Blockchain Explainer</h3>
+                    <p>Animated explainer about blockchain using a postal mail analogy</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Templates Modal -->
+    <div class="modal-overlay" id="templatesModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📚 Prompt Templates</h2>
+                <button class="close-btn" onclick="closeTemplates()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="template-list">
+                    <div class="template-item" onclick="useTemplate('character')">
+                        <h4>🧙 Character Design</h4>
+                        <p>Detailed character creation for games, stories, or art</p>
+                    </div>
+                    <div class="template-item" onclick="useTemplate('scene')">
+                        <h4>🏞️ Scene Description</h4>
+                        <p>Rich environmental and scene descriptions</p>
+                    </div>
+                    <div class="template-item" onclick="useTemplate('product')">
+                        <h4>📦 Product Description</h4>
+                        <p>Compelling product copy and descriptions</p>
+                    </div>
+                    <div class="template-item" onclick="useTemplate('story')">
+                        <h4>📖 Story Framework</h4>
+                        <p>Complete story outlines and narrative structures</p>
+                    </div>
+                    <div class="template-item" onclick="useTemplate('api')">
+                        <h4>🔌 API Design</h4>
+                        <p>RESTful API specifications and documentation</p>
+                    </div>
+                    <div class="template-item" onclick="useTemplate('email')">
+                        <h4>✉️ Email Campaigns</h4>
+                        <p>Marketing email sequences and templates</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div class="camera-modal-overlay" id="cameraModalOverlay">
+        <div class="camera-modal">
+            <h3 id="cameraModalTitle">📷 Capture Photo</h3>
+
+            <div class="cam-tab-row">
+                <button class="cam-tab active" id="tabPhoto" onclick="switchCamMode('photo')">📷 Photo</button>
+                <button class="cam-tab" id="tabVideo" onclick="switchCamMode('video')">🎥 Video</button>
+            </div>
+
+            <video id="cameraFeed" autoplay playsinline muted></video>
+            <canvas id="cameraCanvas"></canvas>
+
+            <div class="camera-controls">
+                <button class="cam-snap-btn" id="snapBtn" onclick="handleCameraAction()">📷 Take Photo</button>
+                <button class="cam-close-btn" onclick="closeCameraModal()">✕ Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span class="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <footer>
+        <p>Fariz-San — Transform simple ideas into powerful AI prompts</p>
+    </footer>
+
+    <script>
+        // State
+        let currentType = 'image';
+        let generatedPrompt = '';
+        let isGenerating = false;
+
+        // Prompt type selection
+        document.querySelectorAll('.type-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                currentType = pill.dataset.type;
+            });
+        });
+
+        // Main generation function
+        async function generatePrompt() {
+            const input = document.getElementById('userInput').value.trim();
+            
+            if (!input) {
+                showToast('Please enter a description first', 'error');
+                return;
+            }
+
+            if (isGenerating) return;
+            isGenerating = true;
+
+            const btn = document.querySelector('.generate-btn');
+            const btnText = btn.querySelector('.btn-text');
+            btnText.innerHTML = '<div class="spinner"></div> Generating...';
+            btn.disabled = true;
+
+            const style = document.getElementById('style').value;
+            const length = document.getElementById('length').value;
+            const detail = document.getElementById('detail').value;
+            const creativity = document.getElementById('creativity').value;
+
+            // Simulate generation delay for realism
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            generatedPrompt = generateDetailedPrompt(input, currentType, style, length, detail, creativity);
+            
+            displayOutput(generatedPrompt);
+
+            btnText.textContent = '⚡ Generate Prompt';
+            btn.disabled = false;
+            isGenerating = false;
+        }
+
+        // Core prompt generation engine
+        function generateDetailedPrompt(input, type, style, length, detail, creativity) {
+            const generators = {
+                image: generateImagePrompt,
+                writing: generateWritingPrompt,
+                code: generateCodePrompt,
+                chat: generateChatPrompt,
+                marketing: generateMarketingPrompt,
+                video: generateVideoPrompt
+            };
+
+            return generators[type](input, style, length, detail, creativity);
+        }
+
+        function generateImagePrompt(input, style, length, detail, creativity) {
+            const lengthMultiplier = { short: 1, medium: 2, long: 3, extensive: 4 };
+            const mult = lengthMultiplier[length];
+
+            // Extract key elements from input
+            const elements = extractElements(input);
+
+            let prompt = `### MASTER IMAGE GENERATION PROMPT ###\n\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                         CORE VISION\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+            
+            prompt += `**Primary Concept:** ${input}\n\n`;
+            prompt += `**Artistic Direction:** ${getStyleDescription(style)}\n\n`;
+
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    DETAILED SCENE BREAKDOWN\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `### 🎭 SUBJECT DESCRIPTION\n\n`;
+            prompt += generateSubjectDescription(input, detail, mult);
+
+            prompt += `\n### 🌍 ENVIRONMENT & SETTING\n\n`;
+            prompt += generateEnvironmentDescription(input, detail, mult);
+
+            prompt += `\n### 💡 LIGHTING & ATMOSPHERE\n\n`;
+            prompt += generateLightingDescription(input, style, mult);
+
+            prompt += `\n### 🎨 COLOR PALETTE & MOOD\n\n`;
+            prompt += generateColorDescription(input, style, mult);
+
+            prompt += `\n### 📐 COMPOSITION & FRAMING\n\n`;
+            prompt += generateCompositionDescription(input, mult);
+
+            prompt += `\n### ✨ ARTISTIC STYLE & TECHNIQUES\n\n`;
+            prompt += generateArtisticStyle(input, style, creativity, mult);
+
+            prompt += `\n### 🔧 TECHNICAL SPECIFICATIONS\n\n`;
+            prompt += generateTechnicalSpecs(style, detail);
+
+            prompt += `\n### 📝 NEGATIVE PROMPT SUGGESTIONS\n\n`;
+            prompt += generateNegativePrompt(input);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    CONDENSED PROMPT VERSION\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+            prompt += generateCondensedPrompt(input, style);
+
+            return prompt;
+        }
+
+        function generateWritingPrompt(input, style, length, detail, creativity) {
+            const mult = { short: 1, medium: 2, long: 3, extensive: 4 }[length];
+
+            let prompt = `### COMPREHENSIVE WRITING PROMPT ###\n\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                         CREATIVE BRIEF\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `**Core Concept:** ${input}\n\n`;
+            prompt += `**Intended Style:** ${getWritingStyleDescription(style)}\n`;
+            prompt += `**Target Length:** ${getLengthDescription(length)}\n`;
+            prompt += `**Creative Freedom:** ${getCreativityDescription(creativity)}\n\n`;
+
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    NARRATIVE FRAMEWORK\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `### 📖 STORY FOUNDATION\n\n`;
+            prompt += generateStoryFoundation(input, mult);
+
+            prompt += `\n### 👥 CHARACTER DEVELOPMENT\n\n`;
+            prompt += generateCharacterGuidelines(input, detail, mult);
+
+            prompt += `\n### 🌍 WORLD BUILDING\n\n`;
+            prompt += generateWorldBuilding(input, mult);
+
+            prompt += `\n### 🎭 TONE & VOICE\n\n`;
+            prompt += generateToneGuidelines(input, style, mult);
+
+            prompt += `\n### 📊 STRUCTURAL ELEMENTS\n\n`;
+            prompt += generateStructuralElements(input, length, mult);
+
+            prompt += `\n### ✍️ WRITING TECHNIQUES\n\n`;
+            prompt += generateWritingTechniques(style, creativity, mult);
+
+            prompt += `\n### 🎯 KEY SCENES TO INCLUDE\n\n`;
+            prompt += generateKeyScenes(input, mult);
+
+            prompt += `\n### 💎 THEMATIC ELEMENTS\n\n`;
+            prompt += generateThematicElements(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    OPENING LINE SUGGESTIONS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+            prompt += generateOpeningLines(input, style);
+
+            return prompt;
+        }
+
+        function generateCodePrompt(input, style, length, detail, creativity) {
+            const mult = { short: 1, medium: 2, long: 3, extensive: 4 }[length];
+
+            let prompt = `### COMPREHENSIVE CODE GENERATION PROMPT ###\n\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                      PROJECT OVERVIEW\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `**Project Concept:** ${input}\n\n`;
+            prompt += `**Code Style:** ${getTechnicalStyleDescription(style)}\n`;
+            prompt += `**Complexity Level:** ${detail}\n`;
+            prompt += `**Innovation Factor:** ${creativity}\n\n`;
+
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    TECHNICAL REQUIREMENTS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `### 🏗️ ARCHITECTURE OVERVIEW\n\n`;
+            prompt += generateArchitectureOverview(input, mult);
+
+            prompt += `\n### 📁 FILE STRUCTURE\n\n`;
+            prompt += generateFileStructure(input, mult);
+
+            prompt += `\n### 🔧 CORE FEATURES\n\n`;
+            prompt += generateCoreFeatures(input, detail, mult);
+
+            prompt += `\n### 🎨 UI/UX SPECIFICATIONS\n\n`;
+            prompt += generateUISpecs(input, mult);
+
+            prompt += `\n### 📊 DATA MODELS\n\n`;
+            prompt += generateDataModels(input, mult);
+
+            prompt += `\n### 🔌 API ENDPOINTS\n\n`;
+            prompt += generateAPIEndpoints(input, mult);
+
+            prompt += `\n### 🔐 SECURITY CONSIDERATIONS\n\n`;
+            prompt += generateSecuritySpecs(mult);
+
+            prompt += `\n### ⚡ PERFORMANCE REQUIREMENTS\n\n`;
+            prompt += generatePerformanceReqs(mult);
+
+            prompt += `\n### 🧪 TESTING STRATEGY\n\n`;
+            prompt += generateTestingStrategy(mult);
+
+            prompt += `\n### 📚 TECHNOLOGY STACK SUGGESTIONS\n\n`;
+            prompt += generateTechStack(input, style);
+
+            return prompt;
+        }
+
+        function generateChatPrompt(input, style, length, detail, creativity) {
+            const mult = { short: 1, medium: 2, long: 3, extensive: 4 }[length];
+
+            let prompt = `### AI ASSISTANT SYSTEM PROMPT ###\n\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                      ASSISTANT IDENTITY\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `**Core Purpose:** ${input}\n\n`;
+            prompt += `**Personality Style:** ${style}\n`;
+            prompt += `**Response Depth:** ${detail}\n`;
+            prompt += `**Creativity Level:** ${creativity}\n\n`;
+
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    PERSONALITY PROFILE\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generatePersonalityProfile(input, style, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    BEHAVIORAL GUIDELINES\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateBehavioralGuidelines(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    CONVERSATION PATTERNS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateConversationPatterns(input, style, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    KNOWLEDGE DOMAINS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateKnowledgeDomains(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    EXAMPLE INTERACTIONS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateExampleInteractions(input, style, mult);
+
+            return prompt;
+        }
+
+        function generateMarketingPrompt(input, style, length, detail, creativity) {
+            const mult = { short: 1, medium: 2, long: 3, extensive: 4 }[length];
+
+            let prompt = `### COMPREHENSIVE MARKETING CAMPAIGN PROMPT ###\n\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                      CAMPAIGN OVERVIEW\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `**Campaign Concept:** ${input}\n\n`;
+            prompt += `**Brand Voice:** ${style}\n`;
+            prompt += `**Campaign Depth:** ${detail}\n`;
+            prompt += `**Creative Approach:** ${creativity}\n\n`;
+
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    TARGET AUDIENCE ANALYSIS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateAudienceAnalysis(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    BRAND MESSAGING FRAMEWORK\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateMessagingFramework(input, style, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    CONTENT DELIVERABLES\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateContentDeliverables(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    CHANNEL STRATEGY\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateChannelStrategy(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    SAMPLE COPY VARIATIONS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateSampleCopy(input, style, mult);
+
+            return prompt;
+        }
+
+        function generateVideoPrompt(input, style, length, detail, creativity) {
+            const mult = { short: 1, medium: 2, long: 3, extensive: 4 }[length];
+
+            let prompt = `### COMPREHENSIVE VIDEO PRODUCTION PROMPT ###\n\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                      VIDEO CONCEPT\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += `**Core Idea:** ${input}\n\n`;
+            prompt += `**Visual Style:** ${style}\n`;
+            prompt += `**Production Depth:** ${detail}\n`;
+            prompt += `**Creative Direction:** ${creativity}\n\n`;
+
+            prompt += `═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    CREATIVE DIRECTION\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateCreativeDirection(input, style, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    SCENE-BY-SCENE BREAKDOWN\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateSceneBreakdown(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    VISUAL SPECIFICATIONS\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateVisualSpecs(input, style, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    AUDIO DESIGN\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateAudioDesign(input, mult);
+
+            prompt += `\n═══════════════════════════════════════════════════════════════\n`;
+            prompt += `                    SCRIPT/NARRATION\n`;
+            prompt += `═══════════════════════════════════════════════════════════════\n\n`;
+
+            prompt += generateScriptNarration(input, style, mult);
+
+            return prompt;
+        }
+
+        // Helper generation functions
+        function extractElements(input) {
+            const words = input.toLowerCase().split(/\s+/);
+            return {
+                subjects: words.filter(w => w.length > 4),
+                mood: detectMood(input),
+                timeOfDay: detectTimeOfDay(input),
+                setting: detectSetting(input)
+            };
+        }
+
+        function detectMood(input) {
+            const moods = {
+                mystical: ['mystical', 'magical', 'enchanted', 'ethereal', 'otherworldly'],
+                dark: ['dark', 'ominous', 'gothic', 'shadow', 'noir'],
+                bright: ['bright', 'sunny', 'cheerful', 'vibrant', 'colorful'],
+                peaceful: ['peaceful', 'serene', 'calm', 'tranquil', 'gentle'],
+                dramatic: ['dramatic', 'intense', 'powerful', 'epic', 'grand']
+            };
+
+            for (const [mood, keywords] of Object.entries(moods)) {
+                if (keywords.some(k => input.toLowerCase().includes(k))) {
+                    return mood;
+                }
+            }
+            return 'balanced';
+        }
+
+        function detectTimeOfDay(input) {
+            const times = ['dawn', 'morning', 'noon', 'afternoon', 'dusk', 'twilight', 'evening', 'night', 'midnight'];
+            for (const time of times) {
+                if (input.toLowerCase().includes(time)) return time;
+            }
+            return 'golden hour';
+        }
+
+        function detectSetting(input) {
+            const settings = {
+                nature: ['forest', 'mountain', 'ocean', 'river', 'meadow', 'garden'],
+                urban: ['city', 'street', 'building', 'skyscraper', 'downtown'],
+                interior: ['room', 'house', 'castle', 'palace', 'temple'],
+                fantasy: ['magical', 'enchanted', 'mystical', 'fairy', 'dragon']
+            };
+
+            for (const [setting, keywords] of Object.entries(settings)) {
+                if (keywords.some(k => input.toLowerCase().includes(k))) {
+                    return setting;
+                }
+            }
+            return 'versatile';
+        }
+
+        function getStyleDescription(style) {
+            const descriptions = {
+                detailed: 'Hyper-realistic with intricate details, textures, and fine elements visible throughout',
+                creative: 'Imaginative and artistic interpretation with unique visual elements and unexpected compositions',
+                professional: 'Clean, polished, and refined aesthetic suitable for commercial and professional use',
+                casual: 'Approachable and friendly visual style with warmth and accessibility',
+                technical: 'Precise and accurate representation with emphasis on correctness and clarity',
+                poetic: 'Dreamlike and emotional visual language that evokes deep feelings and contemplation',
+                cinematic: 'Movie-quality dramatic composition with professional lighting and epic scope',
+                minimalist: 'Clean and simple with essential elements only, focusing on negative space and clarity'
+            };
+            return descriptions[style] || descriptions.detailed;
+        }
+
+        function generateSubjectDescription(input, detail, mult) {
+            let desc = `**Primary Focus:** Render the central subject with exceptional attention to:\n\n`;
+            desc += `• **Form & Structure:** Precise anatomical/structural accuracy with natural proportions\n`;
+            desc += `• **Surface Details:** Intricate textures including skin pores, fabric weave, material grain\n`;
+            desc += `• **Micro-Details:** Subtle elements like dust particles, light reflections, surface imperfections\n`;
+
+            if (mult >= 2) {
+                desc += `• **Material Properties:** Realistic material behavior including transparency, reflectivity, subsurface scattering\n`;
+                desc += `• **Dynamic Elements:** Sense of movement, energy, or life frozen in the perfect moment\n`;
+            }
+
+            if (mult >= 3) {
+                desc += `• **Emotional Resonance:** Expression and body language that conveys deep emotional truth\n`;
+                desc += `• **Interaction Details:** How the subject interacts with light, environment, and other elements\n`;
+                desc += `• **Scale Indicators:** Elements that establish size relationships and spatial context\n`;
+            }
+
+            desc += `\n**Subject Treatment Based on Input:**\n`;
+            desc += `"${input}"\n\n`;
+            desc += `Interpret this as the central narrative element. The subject should command attention while harmonizing with the overall composition. Every detail should support the story being told.\n`;
+
+            return desc;
+        }
+
+        function generateEnvironmentDescription(input, detail, mult) {
+            let desc = `**Setting & Backdrop:**\n\n`;
+            desc += `• **Immediate Surroundings:** Rich contextual elements that ground the scene in believable space\n`;
+            desc += `• **Depth Layers:** Foreground elements, midground focus, and atmospheric background\n`;
+            desc += `• **Environmental Storytelling:** Details that hint at history, culture, or narrative context\n`;
+
+            if (mult >= 2) {
+                desc += `• **Natural Elements:** Weather effects, seasonal indicators, time-of-day lighting\n`;
+                desc += `• **Architectural/Organic Forms:** Structures or natural formations that frame and enhance\n`;
+            }
+
+            if (mult >= 3) {
+                desc += `• **Hidden Details:** Easter eggs and subtle elements for viewers who look closely\n`;
+                desc += `• **Ecosystem Hints:** Signs of life, wear, use, or passage of time\n`;
+                desc += `• **Atmospheric Perspective:** Progressive detail reduction and color shift with distance\n`;
+            }
+
+            return desc;
+        }
+
+        function generateLightingDescription(input, style, mult) {
+            let desc = `**Illumination Design:**\n\n`;
+            desc += `• **Primary Light Source:** ${style === 'cinematic' ? 'Dramatic key light with strong directional quality' : 'Natural, balanced illumination that reveals form'}\n`;
+            desc += `• **Fill Light:** Subtle secondary illumination to preserve shadow detail\n`;
+            desc += `• **Rim/Accent Light:** Edge lighting to separate subject from background\n`;
+
+            if (mult >= 2) {
+                desc += `• **Light Quality:** ${style === 'poetic' ? 'Soft, diffused, dreamy quality' : 'Crisp with clear shadow definition'}\n`;
+                desc += `• **Color Temperature:** Carefully chosen warm/cool balance for mood\n`;
+                desc += `• **Practical Lights:** In-scene light sources that add realism and interest\n`;
+            }
+
+            if (mult >= 3) {
+                desc += `• **Caustics & Reflections:** Light patterns from reflective/refractive surfaces\n`;
+                desc += `• **Volumetric Effects:** God rays, light shafts, atmospheric scattering\n`;
+                desc += `• **Shadow Complexity:** Soft edges, color variation within shadows, ambient occlusion\n`;
+            }
+
+            return desc;
+        }
+
+        function generateColorDescription(input, style, mult) {
+            const mood = detectMood(input);
+            let desc = `**Color Strategy:**\n\n`;
+            
+            const palettes = {
+                mystical: 'Deep purples, ethereal blues, soft golds, and hints of iridescent highlights',
+                dark: 'Rich blacks, deep crimsons, midnight blues, with selective bright accents',
+                bright: 'Saturated primaries, warm yellows, sky blues, with energetic contrast',
+                peaceful: 'Soft pastels, gentle greens, powder blues, warm cream tones',
+                dramatic: 'High contrast with bold primaries against deep shadows',
+                balanced: 'Harmonious spectrum with natural color relationships'
+            };
+
+            desc += `• **Core Palette:** ${palettes[mood]}\n`;
+            desc += `• **Color Harmony:** Complementary and analogous relationships for visual cohesion\n`;
+            desc += `• **Saturation Strategy:** Selective vibrance to guide the eye\n`;
+
+            if (mult >= 2) {
+                desc += `• **Color Temperature Zones:** Warm/cool distribution for depth and mood\n`;
+                desc += `• **Accent Colors:** Strategic pops of contrasting color for interest\n`;
+            }
+
+            return desc;
+        }
+
+        function generateCompositionDescription(input, mult) {
+            let desc = `**Visual Composition:**\n\n`;
+            desc += `• **Rule of Thirds:** Key elements positioned on intersection points\n`;
+            desc += `• **Leading Lines:** Natural paths that guide viewer's eye through the image\n`;
+            desc += `• **Framing:** Environmental elements that create natural frames within frames\n`;
+
+            if (mult >= 2) {
+                desc += `• **Golden Ratio:** Spiral composition for organic, pleasing arrangement\n`;
+                desc += `• **Negative Space:** Strategic empty areas that enhance subject impact\n`;
+                desc += `• **Balance:** Visual weight distributed for stability or intentional tension\n`;
+            }
+
+            if (mult >= 3) {
+                desc += `• **Depth Cues:** Overlapping elements, size variation, atmospheric perspective\n`;
+                desc += `• **Dynamic Symmetry:** Root rectangles and diagonal armature for sophisticated layouts\n`;
+            }
+
+            return desc;
+        }
+
+        function generateArtisticStyle(input, style, creativity, mult) {
+            let desc = `**Artistic Approach:**\n\n`;
+            
+            const styleGuides = {
+                detailed: 'Photorealistic rendering with painterly touches, maximum detail retention',
+                creative: 'Blend of realism and stylization, unexpected color choices, unique perspectives',
+                professional: 'Commercial photography aesthetic, perfect technical execution, broad appeal',
+                cinematic: 'Anamorphic lens characteristics, film grain, professional color grading',
+                poetic: 'Impressionistic touches, emotional color, dream-like quality',
+                minimalist: 'Essential elements only, perfect negative space, clean lines'
+            };
+
+            desc += `• **Primary Style:** ${styleGuides[style] || styleGuides.detailed}\n`;
+            desc += `• **Rendering Technique:** High-fidelity with artistic interpretation\n`;
+            desc += `• **Texture Treatment:** Rich surface detail without noise or artifacts\n`;
+
+            if (mult >= 2) {
+                desc += `\n**Artistic References:**\n`;
+                desc += `• Combine the lighting mastery of Vermeer with contemporary digital precision\n`;
+                desc += `• Channel the compositional elegance of classical painting with modern sensibilities\n`;
+            }
+
+            return desc;
+        }
+
+        function generateTechnicalSpecs(style, detail) {
+            let specs = `**Recommended Settings:**\n\n`;
+            specs += `• **Resolution:** 4K minimum (3840×2160) or higher for print applications\n`;
+            specs += `• **Aspect Ratio:** 16:9 (cinematic), 3:2 (photography), 1:1 (social), or 4:5 (portrait)\n`;
+            specs += `• **Quality Preset:** Maximum/Ultra with all enhancements enabled\n`;
+            specs += `• **Sampling Steps:** 50-100 for optimal detail and coherence\n`;
+            specs += `• **CFG Scale:** 7-12 depending on desired prompt adherence\n`;
+            specs += `• **Model Recommendation:** SDXL, Midjourney v6+, or DALL-E 3 for best results\n`;
+            return specs;
+        }
+
+        function generateNegativePrompt(input) {
+            let neg = `**Elements to Avoid:**\n\n`;
+            neg += `• Blurry, out of focus, motion blur (unless intentional)\n`;
+            neg += `• Low resolution, pixelated, jpeg artifacts, compression\n`;
+            neg += `• Oversaturated, undersaturated, blown highlights, crushed blacks\n`;
+            neg += `• Distorted anatomy, extra limbs, malformed features\n`;
+            neg += `• Watermarks, signatures, text overlays, logos\n`;
+            neg += `• Cropped awkwardly, poor framing, tangent lines\n`;
+            neg += `• Flat lighting, harsh shadows, unnatural color casts\n`;
+            neg += `• Generic, stock photo feeling, cliché compositions\n`;
+            return neg;
+        }
+
+        function generateCondensedPrompt(input, style) {
+            return `**Single-Line Version:**\n\n"${input}, ${getStyleDescription(style).toLowerCase()}, masterful composition, professional lighting, 8K ultra-detailed, award-winning photograph, trending on ArtStation, cinematic color grading, volumetric atmosphere, ray-traced reflections, photorealistic rendering"`;
+        }
+
+        // Writing prompt helpers
+        function getWritingStyleDescription(style) {
+            const styles = {
+                detailed: 'Rich, descriptive prose with sensory details and immersive world-building',
+                creative: 'Experimental narrative with unique voice and unconventional structure',
+                professional: 'Polished, accessible writing suitable for publication',
+                casual: 'Conversational and engaging, easy to read',
+                technical: 'Clear and precise with logical structure',
+                poetic: 'Lyrical prose with rhythm, metaphor, and emotional depth'
+            };
+            return styles[style] || styles.detailed;
+        }
+
+        function getLengthDescription(length) {
+            const lengths = {
+                short: '1,000-2,500 words (short story or article)',
+                medium: '5,000-10,000 words (novelette or in-depth piece)',
+                long: '15,000-30,000 words (novella or comprehensive guide)',
+                extensive: '50,000+ words (novel or complete book)'
+            };
+            return lengths[length];
+        }
+
+        function getCreativityDescription(creativity) {
+            const levels = {
+                low: 'Follow established conventions and familiar patterns',
+                medium: 'Balance between convention and innovation',
+                high: 'Push boundaries with unique approaches and unexpected elements',
+                experimental: 'Break rules intentionally, explore avant-garde techniques'
+            };
+            return levels[creativity];
+        }
+
+        function generateStoryFoundation(input, mult) {
+            let foundation = `**Central Premise:**\n"${input}"\n\n`;
+            foundation += `**Core Conflict:** Derive the primary tension from this concept—what stands between the protagonist and their goal?\n\n`;
+            foundation += `**Stakes:** What meaningful consequences ride on the outcome? Make readers care.\n\n`;
+            foundation += `**Hook:** Open with an irresistible first line that raises immediate questions.\n\n`;
+
+            if (mult >= 2) {
+                foundation += `**Theme:** What deeper truth or question does this story explore?\n\n`;
+                foundation += `**Emotional Journey:** Map the reader's emotional experience from start to finish.\n\n`;
+            }
+
+            return foundation;
+        }
+
+        function generateCharacterGuidelines(input, detail, mult) {
+            let chars = `**Protagonist:**\n`;
+            chars += `• Clear motivation tied to the central conflict\n`;
+            chars += `• Distinct voice and speech patterns\n`;
+            chars += `• Internal contradiction that creates depth\n`;
+            chars += `• Transformation arc from beginning to end\n\n`;
+
+            if (mult >= 2) {
+                chars += `**Supporting Characters:**\n`;
+                chars += `• Each serves a narrative function\n`;
+                chars += `• Contrasting traits that highlight protagonist qualities\n`;
+                chars += `• Their own goals that may conflict or align\n\n`;
+            }
+
+            if (mult >= 3) {
+                chars += `**Character Development Techniques:**\n`;
+                chars += `• Reveal through action, not exposition\n`;
+                chars += `• Use specific, telling details\n`;
+                chars += `• Create moments of vulnerability\n`;
+                chars += `• Show characters making difficult choices\n\n`;
+            }
+
+            return chars;
+        }
+
+        function generateWorldBuilding(input, mult) {
+            let world = `**Setting Details:**\n`;
+            world += `• Ground the story in specific, sensory details\n`;
+            world += `• Establish rules and consistency\n`;
+            world += `• Use setting to reinforce theme and mood\n\n`;
+
+            if (mult >= 2) {
+                world += `**Atmosphere:**\n`;
+                world += `• Weather, lighting, and seasonal elements\n`;
+                world += `• Sounds, smells, and tactile sensations\n`;
+                world += `• Cultural and historical context\n\n`;
+            }
+
+            return world;
+        }
+
+        function generateToneGuidelines(input, style, mult) {
+            let tone = `**Voice Characteristics:**\n`;
+            tone += `• ${getWritingStyleDescription(style)}\n`;
+            tone += `• Consistent narrative distance (intimate vs. observational)\n`;
+            tone += `• Appropriate pacing for genre and mood\n\n`;
+
+            if (mult >= 2) {
+                tone += `**Dialogue Guidelines:**\n`;
+                tone += `• Each character sounds distinct\n`;
+                tone += `• Subtext and what's left unsaid\n`;
+                tone += `• Natural rhythm and interruption\n\n`;
+            }
+
+            return tone;
+        }
+
+        function generateStructuralElements(input, length, mult) {
+            let structure = `**Narrative Architecture:**\n\n`;
+            structure += `• **Opening (10%):** Hook, establish normal world, inciting incident\n`;
+            structure += `• **Rising Action (25%):** Complications, deepening stakes, character development\n`;
+            structure += `• **Midpoint (15%):** Major revelation or shift that changes everything\n`;
+            structure += `• **Escalation (25%):** Increased pressure, darkest moment, all seems lost\n`;
+            structure += `• **Climax (15%):** Peak confrontation, protagonist transformation\n`;
+            structure += `• **Resolution (10%):** New equilibrium, thematic closure\n\n`;
+
+            return structure;
+        }
+
+        function generateWritingTechniques(style, creativity, mult) {
+            let tech = `**Craft Elements:**\n\n`;
+            tech += `• Show, don't tell—let readers draw conclusions\n`;
+            tech += `• Vary sentence length for rhythm and emphasis\n`;
+            tech += `• Use active voice and strong verbs\n`;
+            tech += `• Cut unnecessary adverbs and adjectives\n`;
+
+            if (mult >= 2) {
+                tech += `• Plant and payoff—set up elements early that become important later\n`;
+                tech += `• Create white space for powerful moments\n`;
+                tech += `• End chapters and scenes with hooks\n`;
+            }
+
+            return tech;
+        }
+
+        function generateKeyScenes(input, mult) {
+            let scenes = `**Essential Moments:**\n\n`;
+            scenes += `1. **The Hook:** An opening moment that captures attention immediately\n`;
+            scenes += `2. **The Turning Point:** When the protagonist commits to the journey\n`;
+            scenes += `3. **The Revelation:** A discovery that changes understanding\n`;
+            scenes += `4. **The Crisis:** The lowest point where failure seems certain\n`;
+            scenes += `5. **The Climax:** The ultimate confrontation or decision\n`;
+            scenes += `6. **The Resolution:** A moment showing how things have changed\n\n`;
+
+            return scenes;
+        }
+
+        function generateThematicElements(input, mult) {
+            let themes = `**Thematic Depth:**\n\n`;
+            themes += `• **Surface Level:** The plot—what happens\n`;
+            themes += `• **Character Level:** Internal journey and growth\n`;
+            themes += `• **Thematic Level:** Universal truth or question explored\n`;
+            themes += `• **Symbolic Level:** Recurring images and motifs that reinforce meaning\n\n`;
+
+            return themes;
+        }
+
+        function generateOpeningLines(input, style) {
+            let lines = `**Sample Opening Approaches:**\n\n`;
+            lines += `**In Media Res:** Start in the middle of action\n`;
+            lines += `"The moment I saw [key element], I knew everything was about to change."\n\n`;
+            lines += `**Atmospheric:** Establish mood immediately\n`;
+            lines += `"The [setting detail] had a way of making secrets feel inevitable."\n\n`;
+            lines += `**Question Hook:** Raise immediate curiosity\n`;
+            lines += `"What I'm about to tell you will sound impossible. But I need you to believe it anyway."\n\n`;
+            lines += `**Character Voice:** Establish personality immediately\n`;
+            lines += `"I've been wrong about a lot of things in my life. But never quite like this."\n\n`;
+            return lines;
+        }
+
+        // Code prompt helpers
+        function getTechnicalStyleDescription(style) {
+            const styles = {
+                detailed: 'Comprehensive with extensive comments and documentation',
+                professional: 'Production-ready with best practices and error handling',
+                creative: 'Innovative approaches with elegant solutions',
+                technical: 'Optimized for performance and maintainability'
+            };
+            return styles[style] || styles.professional;
+        }
+
+        function generateArchitectureOverview(input, mult) {
+            let arch = `**System Design:**\n\n`;
+            arch += `Based on "${input}", implement with:\n\n`;
+            arch += `• **Frontend:** Modern SPA with component-based architecture\n`;
+            arch += `• **State Management:** Centralized store with reactive updates\n`;
+            arch += `• **Backend:** RESTful API with clean separation of concerns\n`;
+            arch += `• **Database:** Schema designed for scalability and query efficiency\n`;
+            arch += `• **Real-time:** WebSocket integration where applicable\n\n`;
+
+            if (mult >= 2) {
+                arch += `**Design Patterns:**\n`;
+                arch += `• Repository pattern for data access\n`;
+                arch += `• Factory pattern for object creation\n`;
+                arch += `• Observer pattern for event handling\n`;
+                arch += `• Strategy pattern for interchangeable algorithms\n\n`;
+            }
+
+            return arch;
+        }
+
+        function generateFileStructure(input, mult) {
+            let struct = `**Project Structure:**\n\n`;
+            struct += `\`\`\`\n`;
+            struct += `├── src/\n`;
+            struct += `│   ├── components/     # Reusable UI components\n`;
+            struct += `│   ├── pages/          # Route-level components\n`;
+            struct += `│   ├── hooks/          # Custom React hooks\n`;
+            struct += `│   ├── utils/          # Helper functions\n`;
+            struct += `│   ├── services/       # API communication\n`;
+            struct += `│   ├── store/          # State management\n`;
+            struct += `│   └── types/          # TypeScript definitions\n`;
+            struct += `├── api/\n`;
+            struct += `│   ├── routes/         # API endpoints\n`;
+            struct += `│   ├── controllers/    # Business logic\n`;
+            struct += `│   ├── models/         # Database models\n`;
+            struct += `│   └── middleware/     # Auth, validation, etc.\n`;
+            struct += `├── tests/              # Test files\n`;
+            struct += `└── docs/               # Documentation\n`;
+            struct += `\`\`\`\n\n`;
+
+            return struct;
+        }
+
+        function generateCoreFeatures(input, detail, mult) {
+            let features = `**Feature Requirements:**\n\n`;
+            features += `Based on the concept, implement:\n\n`;
+            features += `1. **Core Functionality**\n`;
+            features += `   • Primary user flow from start to completion\n`;
+            features += `   • Input validation and error handling\n`;
+            features += `   • Responsive feedback for all actions\n\n`;
+
+            features += `2. **User Experience**\n`;
+            features += `   • Intuitive navigation\n`;
+            features += `   • Loading states and skeleton screens\n`;
+            features += `   • Error recovery suggestions\n\n`;
+
+            if (mult >= 2) {
+                features += `3. **Data Management**\n`;
+                features += `   • CRUD operations with optimistic updates\n`;
+                features += `   • Data caching and invalidation\n`;
+                features += `   • Pagination and infinite scroll\n\n`;
+
+                features += `4. **Advanced Features**\n`;
+                features += `   • Search with filters and sorting\n`;
+                features += `   • Real-time updates where relevant\n`;
+                features += `   • Export/import functionality\n\n`;
+            }
+
+            return features;
+        }
+
+        function generateUISpecs(input, mult) {
+            let ui = `**Interface Design:**\n\n`;
+            ui += `• **Layout:** Clean, modern design with clear visual hierarchy\n`;
+            ui += `• **Colors:** Accessible contrast ratios, consistent palette\n`;
+            ui += `• **Typography:** Clear readable fonts, appropriate sizing scale\n`;
+            ui += `• **Spacing:** Consistent padding/margin system (8px base)\n`;
+            ui += `• **Components:** Reusable, composable, well-documented\n`;
+            ui += `• **Responsive:** Mobile-first, breakpoints at 640/768/1024/1280px\n`;
+            ui += `• **Accessibility:** ARIA labels, keyboard navigation, screen reader support\n`;
+            ui += `• **Animation:** Subtle, purposeful transitions (150-300ms)\n\n`;
+
+            return ui;
+        }
+
+        function generateDataModels(input, mult) {
+            let models = `**Data Structure Examples:**\n\n`;
+            models += `\`\`\`typescript\n`;
+            models += `interface BaseEntity {\n`;
+            models += `  id: string;\n`;
+            models += `  createdAt: Date;\n`;
+            models += `  updatedAt: Date;\n`;
+            models += `}\n\n`;
+            models += `interface User extends BaseEntity {\n`;
+            models += `  email: string;\n`;
+            models += `  name: string;\n`;
+            models += `  role: 'admin' | 'user' | 'guest';\n`;
+            models += `  preferences: UserPreferences;\n`;
+            models += `}\n\n`;
+            models += `// Add domain-specific models based on the concept\n`;
+            models += `\`\`\`\n\n`;
+
+            return models;
+        }
+
+        function generateAPIEndpoints(input, mult) {
+            let api = `**API Structure:**\n\n`;
+            api += `\`\`\`\n`;
+            api += `# Authentication\n`;
+            api += `POST   /api/auth/login\n`;
+            api += `POST   /api/auth/register\n`;
+            api += `POST   /api/auth/refresh\n`;
+            api += `DELETE /api/auth/logout\n\n`;
+            api += `# Main Resources (adapt to your domain)\n`;
+            api += `GET    /api/resources          # List with pagination\n`;
+            api += `POST   /api/resources          # Create new\n`;
+            api += `GET    /api/resources/:id      # Get single\n`;
+            api += `PUT    /api/resources/:id      # Update\n`;
+            api += `DELETE /api/resources/:id      # Delete\n`;
+            api += `\`\`\`\n\n`;
+
+            return api;
+        }
+
+        function generateSecuritySpecs(mult) {
+            let security = `**Security Requirements:**\n\n`;
+            security += `• **Authentication:** JWT with refresh token rotation\n`;
+            security += `• **Authorization:** Role-based access control (RBAC)\n`;
+            security += `• **Input Validation:** Server-side validation for all inputs\n`;
+            security += `• **SQL Injection:** Parameterized queries only\n`;
+            security += `• **XSS Prevention:** Content Security Policy, output encoding\n`;
+            security += `• **CSRF Protection:** Token-based for state-changing operations\n`;
+            security += `• **Rate Limiting:** Prevent abuse and brute force\n`;
+            security += `• **HTTPS:** Enforce secure connections\n`;
+            security += `• **Secrets:** Environment variables, never in code\n\n`;
+
+            return security;
+        }
+
+        function generatePerformanceReqs(mult) {
+            let perf = `**Performance Targets:**\n\n`;
+            perf += `• **First Contentful Paint:** < 1.5s\n`;
+            perf += `• **Time to Interactive:** < 3s\n`;
+            perf += `• **API Response Time:** < 200ms (95th percentile)\n`;
+            perf += `• **Bundle Size:** < 200KB gzipped\n`;
+            perf += `• **Lighthouse Score:** > 90 across all categories\n\n`;
+
+            perf += `**Optimization Strategies:**\n`;
+            perf += `• Code splitting and lazy loading\n`;
+            perf += `• Image optimization and lazy loading\n`;
+            perf += `• Database query optimization with indexing\n`;
+            perf += `• Response caching (Redis/CDN)\n`;
+            perf += `• Connection pooling\n\n`;
+
+            return perf;
+        }
+
+        function generateTestingStrategy(mult) {
+            let test = `**Testing Requirements:**\n\n`;
+            test += `• **Unit Tests:** 80%+ coverage for business logic\n`;
+            test += `• **Integration Tests:** API endpoints and database operations\n`;
+            test += `• **E2E Tests:** Critical user flows\n`;
+            test += `• **Visual Regression:** Component screenshot comparisons\n\n`;
+
+            test += `**Test Examples:**\n`;
+            test += `\`\`\`typescript\n`;
+            test += `describe('Component/Feature', () => {\n`;
+            test += `  it('should handle primary use case', () => {\n`;
+            test += `    // Arrange, Act, Assert\n`;
+            test += `  });\n`;
+            test += `  \n`;
+            test += `  it('should handle edge cases', () => {\n`;
+            test += `    // Test boundary conditions\n`;
+            test += `  });\n`;
+            test += `  \n`;
+            test += `  it('should handle errors gracefully', () => {\n`;
+            test += `    // Test error scenarios\n`;
+            test += `  });\n`;
+            test += `});\n`;
+            test += `\`\`\`\n\n`;
+
+            return test;
+        }
+
+        function generateTechStack(input, style) {
+            let stack = `**Recommended Technologies:**\n\n`;
+            stack += `**Frontend:**\n`;
+            stack += `• React 18+ with TypeScript\n`;
+            stack += `• Tailwind CSS or Styled Components\n`;
+            stack += `• React Query for data fetching\n`;
+            stack += `• Zustand or Jotai for state management\n`;
+            stack += `• Vite for build tooling\n\n`;
+
+            stack += `**Backend:**\n`;
+            stack += `• Node.js with Express or Fastify\n`;
+            stack += `• PostgreSQL with Prisma ORM\n`;
+            stack += `• Redis for caching\n`;
+            stack += `• WebSocket (Socket.io) for real-time\n\n`;
+
+            stack += `**DevOps:**\n`;
+            stack += `• Docker for containerization\n`;
+            stack += `• GitHub Actions for CI/CD\n`;
+            stack += `• Vercel/Railway for deployment\n\n`;
+
+            return stack;
+        }
+
+        // Chat/Assistant prompt helpers
+        function generatePersonalityProfile(input, style, mult) {
+            let profile = `**Identity & Purpose:**\n`;
+            profile += `You are an AI assistant specialized in: ${input}\n\n`;
+            
+            profile += `**Core Traits:**\n`;
+            profile += `• Knowledgeable and confident in your domain\n`;
+            profile += `• Warm and approachable in communication\n`;
+            profile += `• Patient with users of all skill levels\n`;
+            profile += `• Honest about limitations\n\n`;
+
+            if (mult >= 2) {
+                profile += `**Voice Characteristics:**\n`;
+                profile += `• Conversational yet professional\n`;
+                profile += `• Clear and jargon-free unless domain-appropriate\n`;
+                profile += `• Encouraging without being patronizing\n`;
+                profile += `• Adaptive to user's expertise level\n\n`;
+            }
+
+            return profile;
+        }
+
+        function generateBehavioralGuidelines(input, mult) {
+            let guidelines = `**Do:**\n`;
+            guidelines += `• Provide accurate, helpful information\n`;
+            guidelines += `• Ask clarifying questions when needed\n`;
+            guidelines += `• Offer step-by-step guidance for complex tasks\n`;
+            guidelines += `• Acknowledge mistakes and correct them\n`;
+            guidelines += `• Suggest alternatives when requests can't be fulfilled\n\n`;
+
+            guidelines += `**Don't:**\n`;
+            guidelines += `• Pretend to have capabilities you lack\n`;
+            guidelines += `• Provide harmful or dangerous information\n`;
+            guidelines += `• Make up facts or statistics\n`;
+            guidelines += `• Be dismissive of user concerns\n`;
+            guidelines += `• Over-explain simple concepts\n\n`;
+
+            return guidelines;
+        }
+
+        function generateConversationPatterns(input, style, mult) {
+            let patterns = `**Response Structure:**\n\n`;
+            patterns += `1. **Acknowledge** the user's question/need\n`;
+            patterns += `2. **Answer** directly and clearly\n`;
+            patterns += `3. **Elaborate** with relevant details\n`;
+            patterns += `4. **Offer** next steps or related information\n\n`;
+
+            patterns += `**Tone Calibration:**\n`;
+            patterns += `• Match the user's energy and formality\n`;
+            patterns += `• Use appropriate humor when context allows\n`;
+            patterns += `• Be more detailed with complex topics\n`;
+            patterns += `• Be concise for simple questions\n\n`;
+
+            return patterns;
+        }
+
+        function generateKnowledgeDomains(input, mult) {
+            let domains = `**Primary Expertise:**\n`;
+            domains += `• Deep knowledge of: ${input}\n`;
+            domains += `• Related tools, techniques, and best practices\n`;
+            domains += `• Common problems and solutions in this area\n`;
+            domains += `• Current trends and developments\n\n`;
+
+            domains += `**Supporting Knowledge:**\n`;
+            domains += `• Adjacent fields that intersect with primary domain\n`;
+            domains += `• General problem-solving approaches\n`;
+            domains += `• Communication and explanation techniques\n\n`;
+
+            return domains;
+        }
+
+        function generateExampleInteractions(input, style, mult) {
+            let examples = `**Sample Dialogue:**\n\n`;
+            examples += `\`\`\`\n`;
+            examples += `User: "I'm new to this. Where do I start?"\n\n`;
+            examples += `Assistant: "Welcome! I'm excited to help you get started with ${input}.\n\n`;
+            examples += `Here's a simple roadmap:\n`;
+            examples += `1. [First foundational concept]\n`;
+            examples += `2. [Second building block]\n`;
+            examples += `3. [First practical application]\n\n`;
+            examples += `Would you like me to dive deeper into any of these?"\n`;
+            examples += `\`\`\`\n\n`;
+
+            examples += `\`\`\`\n`;
+            examples += `User: "I'm having trouble with [specific problem]"\n\n`;
+            examples += `Assistant: "That's a common challenge! Let's troubleshoot.\n\n`;
+            examples += `First, can you tell me:\n`;
+            examples += `• [Relevant context question]\n`;
+            examples += `• [What you've already tried]\n\n`;
+            examples += `This will help me give you the most relevant solution."\n`;
+            examples += `\`\`\`\n\n`;
+
+            return examples;
+        }
+
+        // Marketing prompt helpers
+        function generateAudienceAnalysis(input, mult) {
+            let audience = `**Target Audience Profile:**\n\n`;
+            audience += `**Demographics:**\n`;
+            audience += `• Age range, location, income level\n`;
+            audience += `• Education and professional background\n`;
+            audience += `• Family/lifestyle status\n\n`;
+
+            audience += `**Psychographics:**\n`;
+            audience += `• Values and beliefs\n`;
+            audience += `• Pain points and challenges\n`;
+            audience += `• Goals and aspirations\n`;
+            audience += `• Media consumption habits\n\n`;
+
+            if (mult >= 2) {
+                audience += `**Buyer Personas:**\n`;
+                audience += `Create 2-3 detailed personas with names, backgrounds, and specific scenarios where they would need this product/service.\n\n`;
+            }
+
+            return audience;
+        }
+
+        function generateMessagingFramework(input, style, mult) {
+            let messaging = `**Core Message Architecture:**\n\n`;
+            messaging += `**Value Proposition:**\n`;
+            messaging += `• What problem does this solve?\n`;
+            messaging += `• What makes it unique?\n`;
+            messaging += `• What transformation does the customer experience?\n\n`;
+
+            messaging += `**Messaging Pillars:**\n`;
+            messaging += `1. **Functional Benefit:** The practical value\n`;
+            messaging += `2. **Emotional Benefit:** How it makes them feel\n`;
+            messaging += `3. **Social Benefit:** How others will perceive them\n\n`;
+
+            messaging += `**Tagline Options:**\n`;
+            messaging += `• Short, memorable (3-5 words)\n`;
+            messaging += `• Medium, descriptive (6-10 words)\n`;
+            messaging += `• Full value proposition (one sentence)\n\n`;
+
+            return messaging;
+        }
+
+        function generateContentDeliverables(input, mult) {
+            let content = `**Content Types to Create:**\n\n`;
+            content += `**Social Media:**\n`;
+            content += `• Instagram posts (carousel, reels, stories)\n`;
+            content += `• Twitter/X thread\n`;
+            content += `• LinkedIn article\n`;
+            content += `• TikTok script\n\n`;
+
+            content += `**Email Marketing:**\n`;
+            content += `• Announcement email\n`;
+            content += `• Welcome sequence (3-5 emails)\n`;
+            content += `• Abandoned cart recovery\n`;
+            content += `• Re-engagement campaign\n\n`;
+
+            content += `**Website Copy:**\n`;
+            content += `• Landing page\n`;
+            content += `• Product descriptions\n`;
+            content += `• About page\n`;
+            content += `• FAQ section\n\n`;
+
+            content += `**Advertising:**\n`;
+            content += `• Google Ads copy (headlines + descriptions)\n`;
+            content += `• Facebook/Instagram ad copy\n`;
+            content += `• Display ad messaging\n\n`;
+
+            return content;
+        }
+
+        function generateChannelStrategy(input, mult) {
+            let channels = `**Channel Selection:**\n\n`;
+            channels += `| Channel | Purpose | Content Type | Frequency |\n`;
+            channels += `|---------|---------|--------------|----------|\n`;
+            channels += `| Instagram | Brand awareness | Visual, Stories | Daily |\n`;
+            channels += `| Email | Nurturing | Educational, Offers | 2x/week |\n`;
+            channels += `| LinkedIn | Authority | Long-form, Case studies | 3x/week |\n`;
+            channels += `| Google Ads | Acquisition | Search, Display | Ongoing |\n\n`;
+
+            return channels;
+        }
+
+        function generateSampleCopy(input, style, mult) {
+            let copy = `**Sample Copy Variations:**\n\n`;
+            copy += `**Headlines:**\n`;
+            copy += `• Curiosity: "The Secret to [Desired Outcome]"\n`;
+            copy += `• Benefit: "Get [Result] Without [Pain Point]"\n`;
+            copy += `• Social Proof: "Join [X] Others Who [Achievement]"\n`;
+            copy += `• Urgency: "Limited Time: [Offer]"\n\n`;
+
+            copy += `**Call-to-Action Options:**\n`;
+            copy += `• "Get Started Free"\n`;
+            copy += `• "See How It Works"\n`;
+            copy += `• "Claim Your Spot"\n`;
+            copy += `• "Start Your Journey"\n\n`;
+
+            copy += `**Email Subject Lines:**\n`;
+            copy += `• Question: "Have you tried [method] yet?"\n`;
+            copy += `• Benefit: "Unlock [specific result] today"\n`;
+            copy += `• Curiosity: "This changes everything about [topic]"\n`;
+            copy += `• Personal: "[Name], your [benefit] awaits"\n\n`;
+
+            return copy;
+        }
+
+        // Video prompt helpers
+        function generateCreativeDirection(input, style, mult) {
+            let direction = `**Visual Concept:**\n`;
+            direction += `"${input}"\n\n`;
+            direction += `**Style Reference:** ${style}\n\n`;
+
+            direction += `**Visual Themes:**\n`;
+            direction += `• Primary visual motif\n`;
+            direction += `• Color story and palette\n`;
+            direction += `• Typography and graphics style\n`;
+            direction += `• Transition style (cuts, fades, morphs)\n\n`;
+
+            direction += `**Mood Board Elements:**\n`;
+            direction += `• Reference films/videos for inspiration\n`;
+            direction += `• Key visual metaphors\n`;
+            direction += `• Tone (energetic, calm, dramatic, playful)\n\n`;
+
+            return direction;
+        }
+
+        function generateSceneBreakdown(input, mult) {
+            let scenes = `**Scene Structure:**\n\n`;
+            scenes += `**Scene 1: Hook (0:00-0:05)**\n`;
+            scenes += `• Attention-grabbing opening\n`;
+            scenes += `• Visual: Striking imagery or question\n`;
+            scenes += `• Audio: Music swell or sound design\n\n`;
+
+            scenes += `**Scene 2: Problem/Context (0:05-0:15)**\n`;
+            scenes += `• Establish the situation\n`;
+            scenes += `• Visual: Relatable scenario\n`;
+            scenes += `• Audio: Conversational narration\n\n`;
+
+            scenes += `**Scene 3: Solution/Journey (0:15-0:40)**\n`;
+            scenes += `• Main content delivery\n`;
+            scenes += `• Visual: Demonstration, transformation\n`;
+            scenes += `• Audio: Building energy in narration\n\n`;
+
+            scenes += `**Scene 4: Climax/Payoff (0:40-0:50)**\n`;
+            scenes += `• Emotional peak or key revelation\n`;
+            scenes += `• Visual: Most impressive moment\n`;
+            scenes += `• Audio: Music climax\n\n`;
+
+            scenes += `**Scene 5: CTA/Closing (0:50-1:00)**\n`;
+            scenes += `• Clear call to action\n`;
+            scenes += `• Visual: Logo, end card\n`;
+            scenes += `• Audio: Tagline, URL\n\n`;
+
+            return scenes;
+        }
+
+        function generateVisualSpecs(input, style, mult) {
+            let specs = `**Technical Specifications:**\n\n`;
+            specs += `• **Resolution:** 4K (3840×2160) or 1080p minimum\n`;
+            specs += `• **Frame Rate:** 24fps (cinematic) or 30fps (web)\n`;
+            specs += `• **Aspect Ratio:** 16:9 (YouTube), 9:16 (Stories/TikTok), 1:1 (Feed)\n`;
+            specs += `• **Color Space:** Rec. 709 or custom LUT\n`;
+            specs += `• **Duration:** 60 seconds (adjust as needed)\n\n`;
+
+            specs += `**Visual Treatment:**\n`;
+            specs += `• **Camera Movement:** Smooth dolly, subtle parallax, stabilized handheld\n`;
+            specs += `• **Depth of Field:** Selective focus for emphasis\n`;
+            specs += `• **Color Grading:** ${style === 'cinematic' ? 'Teal and orange, film emulation' : 'Clean, brand-consistent'}\n`;
+            specs += `• **Graphics:** Clean lower thirds, animated elements\n\n`;
+
+            return specs;
+        }
+
+        function generateAudioDesign(input, mult) {
+            let audio = `**Audio Elements:**\n\n`;
+            audio += `**Music:**\n`;
+            audio += `• Style: [Upbeat/Emotional/Corporate/Epic]\n`;
+            audio += `• Tempo: [BPM appropriate to pacing]\n`;
+            audio += `• Instruments: [Key sonic elements]\n`;
+            audio += `• Licensed from: [Artlist/Epidemic Sound/Custom]\n\n`;
+
+            audio += `**Voiceover:**\n`;
+            audio += `• Voice type: [Male/Female/Age range]\n`;
+            audio += `• Tone: [Warm/Authoritative/Energetic/Calm]\n`;
+            audio += `• Pace: Conversational, well-timed with visuals\n\n`;
+
+            audio += `**Sound Design:**\n`;
+            audio += `• Transition sounds (whoosh, clicks)\n`;
+            audio += `• Ambient bed for scenes\n`;
+            audio += `• Emphasis hits for key moments\n`;
+            audio += `• Subtle foley for realism\n\n`;
+
+            return audio;
+        }
+
+        function generateScriptNarration(input, style, mult) {
+            let script = `**Draft Script:**\n\n`;
+            script += `\`\`\`\n`;
+            script += `[HOOK - 0:00]\n`;
+            script += `"What if you could [achieve desired outcome] in just [timeframe]?"\n\n`;
+            script += `[PROBLEM - 0:05]\n`;
+            script += `"Most people struggle with [pain point]. It's frustrating, time-consuming,\n`;
+            script += `and often feels impossible."\n\n`;
+            script += `[SOLUTION - 0:15]\n`;
+            script += `"But there's a better way. [Product/Method] changes everything by\n`;
+            script += `[key differentiator]."\n\n`;
+            script += `[DEMONSTRATION - 0:25]\n`;
+            script += `"Here's how it works: [Step 1], [Step 2], [Step 3].\n`;
+            script += `Simple, effective, and designed for real results."\n\n`;
+            script += `[PAYOFF - 0:45]\n`;
+            script += `"Imagine [transformation or outcome]. That's what's possible when\n`;
+            script += `you [take action]."\n\n`;
+            script += `[CTA - 0:55]\n`;
+            script += `"Ready to get started? [Call to action]. [Product name]."\n`;
+            script += `\`\`\`\n\n`;
+
+            return script;
+        }
+
+        // Display functions
+        function displayOutput(text) {
+            const output = document.getElementById('output');
+            const outputActions = document.getElementById('outputActions');
+            const statsBar = document.getElementById('statsBar');
+            
+            output.classList.remove('empty');
+            output.textContent = text;
+            outputActions.style.display = 'flex';
+            statsBar.style.display = 'flex';
+            
+            updateStats(text);
+        }
+
+        function updateStats(text) {
+            const words = text.trim().split(/\s+/).length;
+            const chars = text.length;
+            const lines = text.split('\n').length;
+            
+            document.getElementById('statWords').textContent = words.toLocaleString();
+            document.getElementById('statChars').textContent = chars.toLocaleString();
+            document.getElementById('statLines').textContent = lines.toLocaleString();
+        }
+
+        // Action functions
+        function copyPrompt() {
+            const output = document.getElementById('output');
+            navigator.clipboard.writeText(output.textContent).then(() => {
+                const btn = event.target.closest('.action-btn');
+                btn.classList.add('copied');
+                btn.innerHTML = '<span>✓</span> Copied!';
+                
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<span>📋</span> Copy';
+                }, 2000);
+                
+                showToast('Copied to clipboard!', 'success');
+            });
+        }
+
+        function downloadPrompt() {
+            const output = document.getElementById('output');
+            const blob = new Blob([output.textContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `prompt-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('Downloaded successfully!', 'success');
+        }
+
+        function regenerate() {
+            generatePrompt();
+        }
+
+        function refinePrompt() {
+            const output = document.getElementById('output');
+            if (output.textContent && !output.classList.contains('empty')) {
+                // Add refinement to existing prompt
+                const refined = output.textContent + '\n\n' + 
+                    '═══════════════════════════════════════════════════════════════\n' +
+                    '                    ADDITIONAL REFINEMENTS\n' +
+                    '═══════════════════════════════════════════════════════════════\n\n' +
+                    '**Enhanced Details:**\n' +
+                    '• Add more specific visual/narrative elements\n' +
+                    '• Increase emotional resonance\n' +
+                    '• Include subtle symbolism and motifs\n' +
+                    '• Layer in additional sensory details\n\n' +
+                    '**Quality Boosters:**\n' +
+                    '• Award-winning quality, masterpiece\n' +
+                    '• Trending on professional platforms\n' +
+                    '• Exceptional attention to detail\n' +
+                    '• Professional production values\n';
+                
+                displayOutput(refined);
+                showToast('Prompt refined!', 'success');
+            }
+        }
+
+        // Example and template functions
+        function loadExample(type, text) {
+            document.getElementById('userInput').value = text;
+            document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            currentType = type;
+            
+            document.getElementById('generator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openTemplates() {
+            document.getElementById('templatesModal').classList.add('active');
+        }
+
+        function closeTemplates() {
+            document.getElementById('templatesModal').classList.remove('active');
+        }
+
+        function useTemplate(template) {
+            const templates = {
+                character: 'A warrior mage with dual personalities - calm scholar by day, fierce protector by night. Include detailed armor design, magical effects, and expressive features.',
+                scene: 'An abandoned Victorian greenhouse reclaimed by nature, with broken glass panels, overgrown exotic plants, and morning light streaming through the mist.',
+                product: 'A premium wireless headphone with floating ear cups, holographic controls, and adaptive noise cancellation. Futuristic yet elegant design.',
+                story: 'A retired astronaut receives a mysterious signal from a spacecraft she thought was destroyed 30 years ago - with her own voice transmitting from it.',
+                api: 'A task management API with projects, tasks, subtasks, tags, due dates, priorities, team assignments, and real-time collaboration features.',
+                email: 'Launch sequence for a sustainable fashion brand targeting conscious consumers aged 25-40 who value quality over quantity.'
+            };
+
+            const types = {
+                character: 'image',
+                scene: 'image',
+                product: 'image',
+                story: 'writing',
+                api: 'code',
+                email: 'marketing'
+            };
+
+            loadExample(types[template], templates[template]);
+            closeTemplates();
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.querySelector('.toast-message').textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('templatesModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeTemplates();
+            }
+        });
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeTemplates();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                generatePrompt();
+            }
+        });
+        // ── Attachment & Media System ──────────────────────────────────
+        let attachedFiles = [];
+        let cameraStream = null;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let camMode = 'photo'; // 'photo' | 'video'
+
+        function getFileIcon(file) {
+            const t = file.type;
+            if (t.startsWith('image/')) return '🖼️';
+            if (t.startsWith('video/')) return '🎬';
+            if (t.startsWith('audio/')) return '🎵';
+            if (t.includes('pdf')) return '📄';
+            if (t.includes('word') || t.includes('document')) return '📝';
+            if (t.includes('sheet') || t.includes('excel') || t.includes('csv')) return '📊';
+            if (t.includes('zip') || t.includes('rar') || t.includes('7z')) return '🗜️';
+            return '📎';
+        }
+
+        function getChipClass(file) {
+            const t = file.type;
+            if (t.startsWith('image/')) return 'is-image';
+            if (t.startsWith('video/')) return 'is-video';
+            return 'is-doc';
+        }
+
+        function renderAttachments() {
+            const list = document.getElementById('attachmentsList');
+            list.innerHTML = '';
+            attachedFiles.forEach((f, i) => {
+                const chip = document.createElement('div');
+                chip.className = `attachment-chip ${getChipClass(f)}`;
+
+                // Image thumbnail
+                if (f.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.className = 'thumb-preview';
+                    img.src = URL.createObjectURL(f);
+                    chip.appendChild(img);
+                } else {
+                    const ico = document.createElement('span');
+                    ico.className = 'chip-icon';
+                    ico.textContent = getFileIcon(f);
+                    chip.appendChild(ico);
+                }
+
+                const name = document.createElement('span');
+                name.className = 'chip-name';
+                name.textContent = f.name;
+                chip.appendChild(name);
+
+                const rm = document.createElement('button');
+                rm.className = 'chip-remove';
+                rm.textContent = '×';
+                rm.title = 'Remove';
+                rm.onclick = () => { attachedFiles.splice(i, 1); renderAttachments(); };
+                chip.appendChild(rm);
+
+                list.appendChild(chip);
+            });
+        }
+
+        function addFiles(files) {
+            for (const f of files) {
+                if (!attachedFiles.find(x => x.name === f.name && x.size === f.size)) {
+                    attachedFiles.push(f);
+                }
+            }
+            renderAttachments();
+            if (files.length) showToast(`${files.length} file(s) attached`, 'success');
+        }
+
+        document.getElementById('attachFileInput').addEventListener('change', e => {
+            addFiles([...e.target.files]);
+            e.target.value = '';
+        });
+
+        document.getElementById('attachImageInput').addEventListener('change', e => {
+            addFiles([...e.target.files]);
+            e.target.value = '';
+        });
+
+        // ── Camera Modal ──────────────────────────────────────────────
+        async function openCameraModal(mode) {
+            camMode = mode;
+            updateCamUI();
+            document.getElementById('cameraModalOverlay').classList.add('active');
+            await startCamera();
+        }
+
+        function closeCameraModal() {
+            stopCamera();
+            if (isRecording) stopRecording();
+            document.getElementById('cameraModalOverlay').classList.remove('active');
+        }
+
+        function switchCamMode(mode) {
+            if (isRecording) stopRecording();
+            camMode = mode;
+            updateCamUI();
+        }
+
+        function updateCamUI() {
+            document.getElementById('tabPhoto').classList.toggle('active', camMode === 'photo');
+            document.getElementById('tabVideo').classList.toggle('active', camMode === 'video');
+            document.getElementById('cameraModalTitle').textContent = camMode === 'photo' ? '📷 Capture Photo' : '🎥 Record Video';
+            const snapBtn = document.getElementById('snapBtn');
+            snapBtn.textContent = camMode === 'photo' ? '📷 Take Photo' : '⏺ Start Recording';
+        }
+
+        async function startCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: camMode === 'video' });
+                const feed = document.getElementById('cameraFeed');
+                feed.srcObject = cameraStream;
+            } catch (err) {
+                showToast('Camera access denied or unavailable', 'error');
+                closeCameraModal();
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+            }
+        }
+
+        function handleCameraAction() {
+            if (camMode === 'photo') {
+                takePhoto();
+            } else {
+                if (!isRecording) startRecording();
+                else stopRecording();
+            }
+        }
+
+        function takePhoto() {
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.getElementById('cameraCanvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(blob => {
+                if (!blob) return;
+                const file = new File([blob], `capture-${Date.now()}.png`, { type: 'image/png' });
+                addFiles([file]);
+                showToast('Photo captured!', 'success');
+                closeCameraModal();
+            }, 'image/png');
+        }
+
+        function startRecording() {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(cameraStream);
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const file = new File([blob], `recording-${Date.now()}.webm`, { type: 'video/webm' });
+                addFiles([file]);
+                showToast('Video saved!', 'success');
+                closeCameraModal();
+            };
+            mediaRecorder.start();
+            isRecording = true;
+            const snapBtn = document.getElementById('snapBtn');
+            snapBtn.textContent = '⏹ Stop Recording';
+            snapBtn.style.background = 'var(--error)';
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+            isRecording = false;
+            const snapBtn = document.getElementById('snapBtn');
+            snapBtn.textContent = '⏺ Start Recording';
+            snapBtn.style.background = '';
+        }
+
+        // Close camera modal on overlay click
+        document.getElementById('cameraModalOverlay').addEventListener('click', e => {
+            if (e.target === document.getElementById('cameraModalOverlay')) closeCameraModal();
+        });
+        // ──────────────────────────────────────────────────────────────
+    </script>
+</body>
+</html>
